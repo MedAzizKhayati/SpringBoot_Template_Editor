@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+	integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+	crossorigin="anonymous">
+
+<title>Templates</title>
+
+<style>
+.title{position:relative;margin-bottom:25px;margin-top:15px;border-bottom:1px solid #DADADA;}
+.title:after{content:"";position:absolute;left:0;bottom:-1.5px;height:3px;width:60px;background-color:#F8694A;}
+</style>
+
+</head>
+<body>
+
+	<div th:replace="menu.html"></div>
+
+	<br>
+	<br>
+
+	<div class="container">
+		<div class="row">
+		    <div class="col-md-12" style="text-align:center;padding:30px;">
+		      <h1>List of Templates</h1>
+		    </div>
+		</div>  
+		<div class="row">
+			<table class="table table-bordered table-hover table-striped">
+			    <thead>
+			      <tr>
+			        <th>ID</th>
+			        <th>Name</th>
+			        <th>File Name</th>
+			        <th>Data</th>
+			        <th></th>
+			      </tr>
+			    </thead>
+			    <tbody>
+				    <tr th:each="template : ${templatesList}">
+				        <td><p th:text="${template.id}"></p></td>
+				        <td><p th:text="${template.name}"></p></td>
+				        <td><p th:text="${template.htmlFileName}"></p></td>
+				        <td><p th:text="${template.data}"></p></td>
+				        <td>
+							<button th:id="'template-' + ${template.id}" class="btn btn-primary" >Edit</button>
+				        </td>
+				    </tr>
+			    </tbody>
+			</table>
+		</div>
+	</div>
+	<div
+			id="template-div"
+			style="
+				position: absolute;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				left: 0%;
+				height: 100%;
+				top: 0%;
+				width: 100%;
+				background-color: rgba(0,0,0,0.7);
+				cursor: pointer;
+			">
+		<button
+				style="
+						position: absolute;
+						top: 60px;
+						right: 60px;
+					"
+				class="btn btn-dark"
+		>
+			Quit
+		</button>
+		<iframe
+				th:src="@{'/template/show/'}"
+				id="template-iframe"
+				width="80%"
+				height="80%"
+		>
+		</iframe>
+	</div>
+
+	<script th:inline="javascript">
+		const iFrame = document.querySelector("#template-iframe");
+		const div = document.querySelector("#template-div");
+		const originalUrl = iFrame.getAttribute('src');
+		div.style.display = "none";
+
+		const templates = [[${templatesList}]];
+		window.templates = templates;
+		console.log(templates);
+		for(const template of templates) {
+			const button = document.querySelector("#template-"+template.id);
+			button.addEventListener('click', () => {
+				console.log("template #"+ template.id + " is clicked.");
+				div.style.display = "flex";
+				iFrame.setAttribute('src', originalUrl + template.id);
+			});
+		}
+
+		div.addEventListener('click', () => {
+			div.style.display = "none";
+		})
+
+		iFrame.querySelector("button").addEventListener('click', () => {
+			div.style.display = "none";
+		})
+
+	</script>
+</body>
+</html>
